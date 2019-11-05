@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'corsheaders',
+    'authn',
 ]
 
 MIDDLEWARE = [
@@ -126,3 +127,38 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(RESOURCES_DIR, 'static/')
+MEDIA_ROOT = os.path.join(RESOURCES_DIR, 'media/')
+MEDIA_URL = '/media/'
+
+
+AUTH_USER_MODEL = 'authn.User'
+
+
+REST_FRAMEWORK = {
+    # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': (
+        #'rest_framework.permissions.IsAuthenticated',
+        'authn.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'authorization.authentication.TokenAuthentication',
+        'authn.authentication.TokenAuthentication',
+    ),
+
+    'EXCEPTION_HANDLER': 'testar.views.exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'non_field_errors',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20,
+    #'DATETIME_FORMAT': '%s',
+
+}
+
+AUTHENTICATION_BACKENDS = (
+    "authn.backends.ModelBackend",
+)
+
+
+TOKEN_EXPIRATION_TIME = 60 * 5  # in seconds

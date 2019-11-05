@@ -8,6 +8,11 @@ pylint = "*"
 
 [packages]
 django = "*"
+djangorestframework = "*"
+python-decouple = "*"
+django-cors-headers = "*"
+dj-database-url = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.7"
