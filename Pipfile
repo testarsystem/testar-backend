@@ -13,6 +13,7 @@ python-decouple = "*"
 django-cors-headers = "*"
 dj-database-url = "*"
 pyjwt = "*"
+drf-nested-routers = "*"
 
 [requires]
 python_version = "3.7"
