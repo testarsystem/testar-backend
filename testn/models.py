@@ -9,7 +9,7 @@ class Test(models.Model):
     class Meta:
         db_table = 'Test'
     title = models.CharField(max_length=50)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tests')
     created = models.DateTimeField(auto_now_add=True)
 
