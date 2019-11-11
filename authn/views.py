@@ -1,16 +1,13 @@
-from django.shortcuts import render
 
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from .models import User
-from .serializers import LoginSerializer
+
+
+from .serializers import LoginSerializer, RegistrationSerializer
 from django.contrib.auth import authenticate
-from rest_framework import exceptions as exc
 from . import error_codes as ec
-from .serializers import UserSerializer
 
 from testar.exceptions import BaseException
-from rest_framework import status
+from rest_framework import status, viewsets, mixins
 from .utils import login_response
 
 
@@ -35,3 +32,8 @@ class TokenInfoView(APIView):
     def get(self, request):
         return login_response(request.user)
 
+
+class RegistrationViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    serializer_class = RegistrationSerializer
+    authentication_classes = ()
+    permission_classes = ()
