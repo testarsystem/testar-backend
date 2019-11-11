@@ -11,16 +11,8 @@ from .serializers import UserSerializer
 
 from testar.exceptions import BaseException
 from rest_framework import status
+from .utils import login_response
 
-
-def login_response(user):
-    user_serializer = UserSerializer
-    payload, token = user.login()
-    return Response({
-        "token": token,
-        "user": user_serializer(instance=user).data,
-        "payload": payload
-    })
 
 
 class LoginView(APIView):
