@@ -21,6 +21,7 @@ class Question(models.Model):
     text = models.CharField(max_length=200)
     created = models.DateTimeField(auto_now_add=True)
     test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='questions')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='questions')
 
 
 class Answer(models.Model):
@@ -31,3 +32,4 @@ class Answer(models.Model):
     correct = models.BooleanField(default=False)
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
     created = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='answers')
