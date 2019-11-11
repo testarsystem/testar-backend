@@ -31,8 +31,8 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'username'
 
     name = models.CharField('name', max_length=50, null=True, blank=True)
-    username = models.CharField(max_length=30, unique=True, null=True, blank=True)
-    password = models.CharField(max_length=128, null=True, blank=True)
+    username = models.CharField(max_length=30, unique=True, null=False)
+    password = models.CharField(max_length=128, null=False)
 
     is_active = models.BooleanField('is active', default=True)
     is_superuser = models.BooleanField('is superuser', default=False)
