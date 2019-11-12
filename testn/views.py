@@ -7,9 +7,9 @@ from testar.exceptions import BaseException
 
 class TestViewSet(ActionSerializerClassMixin, SetOwnerMixin, ModelViewSet):
     action_serializer_class = {
-        "create": serializers.TestCreatingSerializer
+        "retrieve": serializers.TestSerializer
     }
-    serializer_class = serializers.TestSerializer
+    serializer_class = serializers.TestCreatingSerializer
 
     def get_queryset(self):
         return models.Test.objects.filter(owner=self.request.payload['id'])
@@ -17,9 +17,9 @@ class TestViewSet(ActionSerializerClassMixin, SetOwnerMixin, ModelViewSet):
 
 class QuestionViewSet(ActionSerializerClassMixin, ModelViewSet):
     action_serializer_class = {
-        "create": serializers.QuestionCreationSerializer
+        "retrieve": serializers.QuestionSerializer
     }
-    serializer_class = serializers.QuestionSerializer
+    serializer_class = serializers.QuestionCreationSerializer
 
     def get_queryset(self):
         return models.Question.objects.filter(owner=self.request.payload['id'], test_id=self.kwargs['test_pk'])
