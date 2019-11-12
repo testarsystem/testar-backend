@@ -164,4 +164,4 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
-TOKEN_EXPIRATION_TIME = 60 * 5  # in seconds
+TOKEN_EXPIRATION_TIME = config('TOKEN_EXPIRATION_TIME', default=60 * 60 * 12, cast=int)   # in seconds
