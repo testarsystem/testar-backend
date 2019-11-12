@@ -28,10 +28,6 @@ class LoginView(APIView):
         return login_response(user)
 
 
-class TokenInfoView(APIView):
-    def get(self, request):
-        return login_response(request.user)
-
 
 class RegistrationViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = RegistrationSerializer
