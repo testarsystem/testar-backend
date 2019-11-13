@@ -44,9 +44,10 @@ swagger_urls = [
 ]
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('auth/', include('authn.urls')),
-    path('test/', include('testn.urls')),
+   path('admin/', admin.site.urls),
+   path('auth/', include('authn.urls')),
+   path('test/', include('testn.urls')),
+   path('competition/', include('competition.urls')),
 ]
 urlpatterns += swagger_urls
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
