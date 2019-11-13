@@ -48,6 +48,7 @@ urlpatterns = [
    path('auth/', include('authn.urls')),
    path('test/', include('testn.urls')),
    path('competition/', include('competition.urls')),
+   path('public/', include('public.urls')),
 ]
 urlpatterns += swagger_urls
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

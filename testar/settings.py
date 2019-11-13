@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'authn',
     'testn',
     'competition',
+    'public',
 ]
 
 MIDDLEWARE = [
