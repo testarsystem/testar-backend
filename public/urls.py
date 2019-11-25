@@ -5,6 +5,7 @@ from rest_framework_nested import routers
 
 router = routers.SimpleRouter()
 router.register('users', views.PublicUserViewSet, base_name='users')
+router.register('competitions', views.PublicCompetitionViewSet, base_name='competitions')
 
 
 urlpatterns = [

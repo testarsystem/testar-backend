@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from authn.models import User
 from authn.serializers import UserSerializer
 from rest_framework import viewsets, mixins

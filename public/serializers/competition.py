@@ -1,0 +1,5 @@
+from rest_framework.serializers import ModelSerializer
+from competition.serializers import CompetitionSerializer
+
+PublicCompetitionSerializer = CompetitionSerializer
+
