@@ -26,3 +26,11 @@ class Participant(models.Model):
     end_time = models.DateTimeField(null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='participants', null=False)
 
+
+class Submission(models.Model):
+    class Meta:
+        db_table = 'ParticipantSubmission'
+    participant = models.ForeignKey('Participant', on_delete=models.CASCADE, related_name='submissions', null=False)
+    test = models.ForeignKey('testn.Test', on_delete=models.CASCADE, null=False)
+    question = models.ForeignKey('testn.Question', on_delete=models.CASCADE, null=False)
+    answer = models.ForeignKey('testn.Answer', on_delete=models.CASCADE, null=False)
