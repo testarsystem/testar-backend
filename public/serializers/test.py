@@ -6,7 +6,7 @@ from testn.models import Answer
 class PublicAnswerSerializer(ModelSerializer):
     class Meta:
         model = Answer
-        fields = ('text',)
+        fields = ('id', 'text',)
 
 
 class PublicQuestionSerializer(QuestionSerializer):
