@@ -5,7 +5,10 @@ from rest_framework.filters import SearchFilter
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from testar.exceptions import BaseException
-from competition.models import Participant, Submission
+from competition.models import Participant, Submission, Competition
+from competition.utils import calculate_result_individual, calculate_result
+from competition.serializers import ParticipantSerializer
+from django.utils.timezone import now
 
 #todo make method that checks if competition is still active and participants can join and submit
 class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
@@ -60,6 +63,31 @@ class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
         if not competition:
             raise BaseException(status=404, detail='submission not found', code='not_found')
         submission.delete()
+        return Response(status=200)
+
+    @action(('POST',), detail=True, url_path='start', url_name='start_test')
+    def start_test(self, request, pk):
+        competition = self.__get_competition(pk)
+        participant = self.__get_participant(competition, request)
+        participant.start()
+        participant.save()
+        s = ParticipantSerializer(instance=participant)
+        return Response(s.data)
+
+    @action(('POST',), detail=True, url_path='finish', url_name='finish_test')
+    def finish_test(self, request, pk):
+        competition = self.__get_competition(pk)
+        participant = self.__get_participant(competition, request)
+        participant = calculate_result_individual(participant, save=False)
+        participant.finish()
+        participant.save()
+        s = ParticipantSerializer(instance=participant)
+        return Response(s.data)
+
+    @action(('GET',), detail=False, url_path='calc_results', url_name='competition_calculate_result')
+    def calculate_results(self, request):
+        for competition in Competition.objects.all():
+            calculate_result(competition)
         return Response(status=200)
 
     @staticmethod

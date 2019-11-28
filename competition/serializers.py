@@ -12,7 +12,7 @@ class CompetitionSerializer(s.ModelSerializer):
 class ParticipantSerializer(s.ModelSerializer):
     class Meta:
         model = models.Participant
-        fields = ('id', 'user', 'start_time', 'end_time')
+        fields = ('id', 'user', 'start_time', 'end_time', 'points')
     user = UserSerializer()
 
 

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils.timezone import now
 
 User = get_user_model()
 
@@ -25,6 +26,13 @@ class Participant(models.Model):
     start_time = models.DateTimeField(null=True)
     end_time = models.DateTimeField(null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='participants', null=False)
+    points = models.FloatField(null=True)
+
+    def start(self):
+        self.start_time = now()
+
+    def finish(self):
+        self.end_time = now()
 
 
 class Submission(models.Model):
