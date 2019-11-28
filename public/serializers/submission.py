@@ -1,9 +1,12 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers as s
 from competition.models import Submission
 
 
-class SubmissionSerializer(ModelSerializer):
+class SubmissionSerializer(s.ModelSerializer):
     class Meta:
         model = Submission
-        fields = ('question', 'answer')
+        fields = ('id', 'question', 'answer')
 
+
+class DeleteSubmissionSerializer(s.Serializer):
+    id = s.IntegerField(required=True)

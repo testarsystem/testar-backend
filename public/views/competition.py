@@ -1,11 +1,11 @@
 from public.models import PublicCompetition
-from public.serializers import PublicCompetitionSerializer, PublicTestSerializer, SubmissionSerializer
+from public.serializers import PublicCompetitionSerializer, PublicTestSerializer, SubmissionSerializer, DeleteSubmissionSerializer
 from rest_framework import viewsets, mixins
 from rest_framework.filters import SearchFilter
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from testar.exceptions import BaseException
-from competition.models import Participant
+from competition.models import Participant, Submission
 
 #todo make method that checks if competition is still active and participants can join and submit
 class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
@@ -47,6 +47,19 @@ class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
         submission_serializer.is_valid(True)
         # todo: check uniqueness for certain question and answer
         submission_serializer.save(participant=participant, test=competition.test)
+        return Response(status=200, data=submission_serializer.data)
+
+    @action(('POST',), detail=True, url_path='delete_submit', url_name='competition_delete_submit')
+    def delete_submission(self, request, pk):
+        competition = self.__get_competition(pk)
+        participant = self.__get_participant(competition, request)
+        rm_submission = DeleteSubmissionSerializer(data=request.data)
+        rm_submission.is_valid(True)
+        print(rm_submission.data)
+        submission = Submission.objects.filter(id=rm_submission.data['id'], participant=participant, test=competition.test).first()
+        if not competition:
+            raise BaseException(status=404, detail='submission not found', code='not_found')
+        submission.delete()
         return Response(status=200)
 
     @staticmethod
