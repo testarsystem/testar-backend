@@ -17,6 +17,9 @@ class Competition(models.Model):
     duration = models.TimeField(null=False)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='competitions', null=False)
 
+    def duration_seconds(self):
+        return (self.duration.hour * 60 + self.duration.minute) * 60 + self.duration.second
+
 
 class Participant(models.Model):
     class Meta:

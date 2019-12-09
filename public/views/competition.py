@@ -23,16 +23,35 @@ class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
         return PublicCompetition.objects.filter(finish_time__gte=now()).order_by('start_time').all()
 
     @action(['GET'], detail=True, url_path='test', url_name='competition_test')
-    def test(self, *args, **kwargs):
-        # todo: filter by time (not started, not finished), if not participant not show
-        pk = kwargs['pk']
+    def test(self, request, pk):
         competition = self.__get_competition(pk)
+        participant = competition.participants.filter(user=request.user).first()
+        if not participant:
+            raise BaseException(detail='Join to competition first', code='not_participant', status=403)
+        if participant.end_time:
+            raise BaseException(detail='competition finished', code='competition_finished', status=404)
+
+        time = now()
+        if competition.start_time > time:
+            raise BaseException(detail='competition not started', code='competition_not_started', status=403)
+        if competition.finish_time < time:
+            raise BaseException(detail='competition finished', code='competition_finished', status=404)
+
+        time_passed = now() - participant.start_time
+        if time_passed.seconds >= competition.duration_seconds():
+            raise BaseException(detail='competition finished', code='competition_finished', status=404)
+
+        if not participant.start_time:
+            participant.start_time = time
+            participant.save()
         test_serializer = PublicTestSerializer(instance=competition.test)
         return Response(data=test_serializer.data)
 
     @action(('POST',), detail=True, url_path='join', url_name='competition_join')
     def join(self, request, pk):
         competition = self.__get_competition(pk)
+        if competition.finish_time < now():
+            raise BaseException(detail='competition finished', code='competition_finished', status=404)
         participant = Participant.objects.filter(competition=competition, user=request.user).first()
         if not participant:
             Participant.objects.create(competition=competition,
@@ -42,14 +61,29 @@ class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
 
     @action(('POST',), detail=True, url_path='submit', url_name='competition_submit')
     def submission(self, request, pk):
-        # todo: check if question, answer related to test
         competition = self.__get_competition(pk)
         participant = self.__get_participant(competition, request)
         submission_serializer = SubmissionSerializer(data=request.data)
         submission_serializer.is_valid(True)
-        # todo: check uniqueness for certain question and answer
-        submission_serializer.save(participant=participant, test=competition.test)
-        return Response(status=200, data=submission_serializer.data)
+        time_passed = now() - participant.start_time
+        if time_passed.seconds >= competition.duration_seconds():
+            participant.finish()
+            participant.save()
+            raise BaseException(detail='competition finished', code='competition_finished', status=404)
+
+        data = submission_serializer.validated_data
+        test = competition.test
+        question = test.questions.filter(id=data['question'].id).first()
+        if not question:
+            raise BaseException(detail='question not found', code='not_found', status=404)
+        answer = question.answers.filter(id=data['answer'].id).first()
+        if not answer:
+            raise BaseException(detail='answer not found', code='not_found', status=404)
+        submission = Submission.objects.filter(participant=participant, test=test, question=question, answer=answer).first()
+        if not submission:
+            submission_serializer.save(participant=participant, test=competition.test)
+            submission = submission_serializer.instance
+        return Response(status=200, data=SubmissionSerializer(instance=submission).data)
 
     @action(('POST',), detail=True, url_path='delete_submit', url_name='competition_delete_submit')
     def delete_submission(self, request, pk):
@@ -57,7 +91,6 @@ class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
         participant = self.__get_participant(competition, request)
         rm_submission = DeleteSubmissionSerializer(data=request.data)
         rm_submission.is_valid(True)
-        print(rm_submission.data)
         submission = Submission.objects.filter(id=rm_submission.data['id'], participant=participant, test=competition.test).first()
         if not competition:
             raise BaseException(status=404, detail='submission not found', code='not_found')
@@ -89,15 +122,13 @@ class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
             calculate_result(competition)
         return Response(status=200)
 
-    @staticmethod
-    def __get_competition(pk):
-        competition = PublicCompetition.objects.filter(id=pk).first()
+    def __get_competition(self, pk):
+        competition = self.get_queryset().filter(id=pk).first()
         if not competition:
             raise BaseException(status=404, detail='competition not found', code='not_found')
         return competition
 
-    @staticmethod
-    def __get_participant(competition, request):
+    def __get_participant(self, competition, request):
         participant = Participant.objects.filter(competition=competition, user=request.user).first()
         if not participant:
             raise BaseException(status=403, detail='you are not participant', code='not_participant')

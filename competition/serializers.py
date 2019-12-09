@@ -9,7 +9,7 @@ class CompetitionSerializer(s.ModelSerializer):
         fields = ('id', 'title', 'description', 'created', 'start_time', 'finish_time', 'duration', 'test')
 
     def validate(self, attrs):
-        if attrs['finish_time'] <= attrs['start_time']:
+        if not self.partial and attrs['finish_time'] <= attrs['start_time']:
             raise s.ValidationError(detail={"finish_time": "finish_time must be greater than start_time"})
         return attrs
 
