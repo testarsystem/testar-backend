@@ -20,8 +20,7 @@ class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
     serializer_class = PublicCompetitionSerializer
 
     def get_queryset(self):
-        # todo: sort by time
-        return PublicCompetition.objects.all()
+        return PublicCompetition.objects.filter(finish_time__gte=now()).order_by('start_time').all()
 
     @action(['GET'], detail=True, url_path='test', url_name='competition_test')
     def test(self, *args, **kwargs):
