@@ -28,6 +28,8 @@ class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
     serializer_class = PublicCompetitionSerializer
 
     def get_queryset(self):
+        if self.request.query_params.get('participated'):
+            return [p.competition for p in self.request.user.participated.all()]
         return PublicCompetition.objects.filter(finish_time__gte=now()).order_by('start_time').all()
 
     @action(['GET'], detail=True, url_path='test', url_name='competition_test')
