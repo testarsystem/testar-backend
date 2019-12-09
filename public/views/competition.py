@@ -75,6 +75,16 @@ class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
         participant = self.__get_participant(competition, request)
         submission_serializer = SubmissionSerializer(data=request.data)
         submission_serializer.is_valid(True)
+
+        if participant.end_time:
+            raise BaseException(detail='competition finished', code='competition_finished', status=404)
+
+        time = now()
+        if competition.start_time > time:
+            raise BaseException(detail='competition not started', code='competition_not_started', status=403)
+        if competition.finish_time < time:
+            raise BaseException(detail='competition finished', code='competition_finished', status=404)
+
         time_passed = now() - participant.start_time
         if time_passed.seconds >= competition.duration_seconds():
             participant.finish()
