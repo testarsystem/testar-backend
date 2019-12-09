@@ -10,7 +10,15 @@ from competition.utils import calculate_result_individual, calculate_result
 from competition.serializers import ParticipantSerializer
 from django.utils.timezone import now
 
-#todo make method that checks if competition is still active and participants can join and submit
+
+class ParticipantsViewSet(mixins.ListModelMixin,
+                          viewsets.GenericViewSet):
+    serializer_class = ParticipantSerializer
+
+    def get_queryset(self):
+        return Participant.objects.filter(competition__id=self.kwargs['competition_pk']).all()
+
+
 class PublicCompetitionViewSet(mixins.RetrieveModelMixin,
                                mixins.ListModelMixin,
                                viewsets.GenericViewSet):
