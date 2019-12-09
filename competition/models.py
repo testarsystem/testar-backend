@@ -25,7 +25,7 @@ class Participant(models.Model):
     class Meta:
         db_table = 'Participant'
     competition = models.ForeignKey(Competition, on_delete=models.CASCADE, related_name='participants', null=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name='participated')
     start_time = models.DateTimeField(null=True)
     end_time = models.DateTimeField(null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='participants', null=False)
