@@ -48,6 +48,9 @@ class AnswerViewSet(ActionSerializerClassMixin, ModelViewSet):
         return models.Answer.objects.filter(owner=self.request.payload['id'], question_id=self.kwargs['question_pk'])
 
     def perform_create(self, serializer):
+        test = self._get_test()
+        if not test:
+            raise BaseException(status=404, detail='test not found', code='not_found')
         question = models.Question.objects.filter(owner=self.request.payload['id'], id=self.kwargs['question_pk']).first()
         if not question:
             raise BaseException(status=404, detail='question not found', code='not_found')
